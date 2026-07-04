@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ENDURIOUS — Event Kalender 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --sand:    #E8DCC2;
+      --charcoal:#1A1A1A;
+      --orange:  #E86A1A;
+      --steel:   #4A4A4A;
+      --black:   #000000;
+      --bg:      #0a0a0a;
+      --bg2:     #111111;
+      --bg3:     #161616;
+      --border:  #1e1e1e;
+      --border2: #2a2a2a;
+      --text:    #f0ece4;
+      --muted:   #d4cfc7;
+      --dim:     #888;
+      --faint:   #555;
+      --veryfaint:#333;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', 'Helvetica Neue', sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+    /* ── HEADER ── */
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 20px 24px 16px;
+      position: sticky;
+      top: 0;
+      background: var(--bg);
+      z-index: 50;
+    }
+    .header-inner { max-width: 840px; margin: 0 auto; }
+    .header-eyebrow {
+      font-size: 9px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--faint);
+      margin-bottom: 4px;
+    }
+    header h1 {
+      font-family: 'Oswald', 'Arial Narrow', sans-serif;
+      font-size: 26px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text);
+    }
+    header h1 span { color: var(--orange); }
+    .header-sub { font-size: 11px; color: var(--veryfaint); margin-top: 3px; }
+
+    /* ── FILTERS ── */
+    .filters {
+      border-bottom: 1px solid #111;
+      padding: 12px 24px;
+      background: #0d0d0d;
+    }
+    .filters-inner { max-width: 840px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
+    .filter-row { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+    .filter-label {
+      font-size: 9px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--veryfaint);
+      margin-right: 4px;
+      white-space: nowrap;
+    }
+    .filter-divider { width: 1px; height: 14px; background: var(--border2); margin: 0 4px; flex-shrink: 0; }
+
+    .btn {
+      background: none;
+      border: 1px solid var(--border2);
+      color: var(--faint);
+      border-radius: 3px;
+      padding: 4px 10px;
+      cursor: pointer;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      font-family: inherit;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .btn:hover { border-color: var(--faint); color: var(--muted); }
+    .btn.active-sand  { background: var(--sand);   color: var(--black); border-color: var(--sand); }
+    .btn.active-color { color: #fff; }
+
+    /* ── MAIN ── */
+    main { max-width: 840px; margin: 0 auto; padding: 24px 24px 80px; }
+
+    /* ── LEGEND ── */
+    .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #111; }
+    .legend-item { display: flex; align-items: center; gap: 6px; }
+    .legend-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .legend-label { font-size: 10px; color: var(--veryfaint); letter-spacing: 1px; }
+
+    /* ── MONTH GROUP ── */
+    .month-group { margin-bottom: 32px; }
+    .month-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .month-title {
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--orange);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .month-line { flex: 1; height: 1px; background: var(--border); }
+    .month-count { font-size: 9px; color: var(--veryfaint); letter-spacing: 1px; }
+
+    .events-list { display: flex; flex-direction: column; gap: 6px; }
+
+    /* ── EVENT CARD ── */
+    .event-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 0 6px 6px 0;
+      padding: 16px 18px;
+      cursor: pointer;
+      display: flex;
+      gap: 18px;
+      align-items: flex-start;
+      transition: background 0.15s;
+      text-decoration: none;
+      color: inherit;
+    }
+    .event-card:hover { background: var(--bg3); }
+
+    .event-date {
+      text-align: center;
+      min-width: 44px;
+      flex-shrink: 0;
+    }
+    .event-day {
+      font-family: 'Oswald', 'Arial Narrow', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1;
+    }
+    .event-month-label {
+      font-size: 9px;
+      letter-spacing: 2px;
+      color: var(--faint);
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+    .event-divider { width: 1px; background: var(--border); align-self: stretch; flex-shrink: 0; }
+
+    .event-body { flex: 1; min-width: 0; }
+    .event-meta { display: flex; gap: 8px; align-items: center; margin-bottom: 5px; flex-wrap: wrap; }
+    .event-type-tag {
+      font-size: 9px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+    .event-dot { font-size: 9px; color: var(--border2); }
+    .event-source-tag { font-size: 9px; letter-spacing: 1px; text-transform: uppercase; }
+    .event-price-tag {
+      font-size: 9px;
+      color: var(--faint);
+      border: 1px solid var(--border2);
+      border-radius: 2px;
+      padding: 1px 5px;
+    }
+    .event-recurring-tag {
+      font-size: 9px;
+      color: var(--veryfaint);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      padding: 1px 5px;
+    }
+    .event-name {
+      font-family: 'Oswald', 'Arial Narrow', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: 0.5px;
+      margin-bottom: 3px;
+    }
+    .event-location { font-size: 11px; color: var(--faint); }
+
+    /* ── EMPTY STATE ── */
+    .empty {
+      text-align: center;
+      padding: 60px 0;
+      color: var(--veryfaint);
+    }
+    .empty-icon { font-size: 32px; margin-bottom: 10px; }
+
+    /* ── FOOTER NOTE ── */
+    .footer-note {
+      border-top: 1px solid #111;
+      padding-top: 20px;
+      margin-top: 8px;
+      font-size: 10px;
+      color: var(--veryfaint);
+      line-height: 1.6;
+    }
+
+    /* ── MODAL ── */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.92);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .modal-backdrop.open { opacity: 1; pointer-events: all; }
+
+    .modal {
+      background: #0f0f0f;
+      border: 1px solid var(--border2);
+      border-radius: 0 0 8px 8px;
+      padding: 28px;
+      width: 100%;
+      max-width: 540px;
+      max-height: 90vh;
+      overflow-y: auto;
+      transform: translateY(8px);
+      transition: transform 0.2s;
+    }
+    .modal-backdrop.open .modal { transform: translateY(0); }
+
+    .modal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 18px; }
+    .modal-eyebrow { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 5px; }
+    .modal-title { font-family: 'Oswald','Arial Narrow',sans-serif; font-size: 20px; font-weight: 700; color: var(--text); }
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--faint);
+      cursor: pointer;
+      font-size: 18px;
+      padding: 4px;
+      line-height: 1;
+      font-family: inherit;
+    }
+    .modal-close:hover { color: var(--text); }
+
+    .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
+    .modal-cell { background: var(--bg3); border-radius: 5px; padding: 12px 14px; }
+    .modal-cell-label { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--faint); margin-bottom: 3px; }
+    .modal-cell-value { font-size: 12px; color: var(--muted); }
+
+    .modal-desc { font-size: 13px; color: var(--dim); line-height: 1.7; margin-bottom: 20px; }
+
+    .modal-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; }
+    .modal-tag {
+      font-size: 9px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--veryfaint);
+      border: 1px solid var(--border2);
+      border-radius: 2px;
+      padding: 3px 7px;
+    }
+
+    .modal-cta {
+      display: inline-block;
+      background: var(--orange);
+      color: #fff;
+      padding: 11px 22px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      transition: opacity 0.15s;
+    }
+    .modal-cta:hover { opacity: 0.85; }
+
+    @media (max-width: 600px) {
+      header { padding: 16px; }
+      main { padding: 16px 16px 60px; }
+      .filters { padding: 10px 16px; }
+      .modal-grid { grid-template-columns: 1fr; }
+      .modal { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="header-eyebrow">ENDURIOUS</div>
+    <h1>Event Kalender <span>2026</span></h1>
+    <p class="header-sub" id="event-count">Adventure- en enduro-events in NL, BE en Europa</p>
+  </div>
+</header>
+
+<div class="filters">
+  <div class="filters-inner">
+    <div class="filter-row" id="type-filters"></div>
+    <div class="filter-row" id="source-filters"></div>
+    <div class="filter-row" id="month-filters"></div>
+  </div>
+</div>
+
+<main>
+  <div class="legend" id="legend"></div>
+  <div id="events-container"></div>
+  <p class="footer-note">
+    Events samengesteld via ActionPlanet, Adventure Challenge, Allroad Academy, Alex van den Broek Events, Owaka, ADV Pulse en OUTDURO.
+    Controleer de officiële pagina voor actuele data en inschrijfinfo.
+  </p>
+</main>
+
+<!-- Modal -->
+<div class="modal-backdrop" id="modal-backdrop" role="dialog" aria-modal="true">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-eyebrow" id="modal-eyebrow"></div>
+        <div class="modal-title" id="modal-title"></div>
+      </div>
+      <button class="modal-close" id="modal-close" aria-label="Sluiten">✕</button>
+    </div>
+    <div class="modal-grid" id="modal-grid"></div>
+    <p class="modal-desc" id="modal-desc"></p>
+    <div class="modal-tags" id="modal-tags"></div>
+    <a class="modal-cta" id="modal-cta" href="#" target="_blank" rel="noopener noreferrer">Meer info en inschrijven</a>
+  </div>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────────
+
+const EVENTS = [
+  { id:1, name:"Motordag ActionPlanet", type:"training", date:"2026-07-13", dateEnd:"2026-07-13", location:"Spaarnwoude, Nederland", country:"NL", description:"Iedere 2e zondag van de maand kun je met je eigen allroad of adventure motor het offroad terrein van ActionPlanet op. Ervaren rijders geven instructie. Parcours met zandpaden, hellingen en technische secties.", url:"https://www.actionplanet.nl/activiteit/motordagen/", source:"ActionPlanet", difficulty:"All levels", tags:["offroad","training","maandelijks"], price:null, recurring:true },
+  { id:2, name:"Motordag ActionPlanet", type:"training", date:"2026-08-09", dateEnd:"2026-08-09", location:"Spaarnwoude, Nederland", country:"NL", description:"Iedere 2e zondag van de maand kun je met je eigen allroad of adventure motor het offroad terrein van ActionPlanet op. Ervaren rijders geven instructie.", url:"https://www.actionplanet.nl/activiteit/motordagen/", source:"ActionPlanet", difficulty:"All levels", tags:["offroad","training","maandelijks"], price:null, recurring:true },
+  { id:3, name:"Extra Motordag ActionPlanet", type:"training", date:"2026-08-16", dateEnd:"2026-08-16", location:"Spaarnwoude, Nederland", country:"NL", description:"Extra motordag speciaal voor thuisblijvers in de zomervakantie. Zelfde format als de reguliere maandelijkse motordag.", url:"https://www.actionplanet.nl/agenda/", source:"ActionPlanet", difficulty:"All levels", tags:["offroad","training","zomer"], price:null, recurring:false },
+  { id:4, name:"Motordag ActionPlanet", type:"training", date:"2026-09-13", dateEnd:"2026-09-13", location:"Spaarnwoude, Nederland", country:"NL", description:"Iedere 2e zondag van de maand kun je met je eigen allroad of adventure motor het offroad terrein van ActionPlanet op.", url:"https://www.actionplanet.nl/activiteit/motordagen/", source:"ActionPlanet", difficulty:"All levels", tags:["offroad","training","maandelijks"], price:null, recurring:true },
+  { id:5, name:"Motordag ActionPlanet", type:"training", date:"2026-10-11", dateEnd:"2026-10-11", location:"Spaarnwoude, Nederland", country:"NL", description:"Iedere 2e zondag van de maand kun je met je eigen allroad of adventure motor het offroad terrein van ActionPlanet op.", url:"https://www.actionplanet.nl/activiteit/motordagen/", source:"ActionPlanet", difficulty:"All levels", tags:["offroad","training","maandelijks"], price:null, recurring:true },
+  { id:6, name:"Adventure Challenge 2026", type:"challenge", date:"2026-04-04", dateEnd:"2026-04-05", location:"ActionPlanet, Spaarnwoude", country:"NL", description:"De 4e editie van de Adventure Challenge. Een weekend vol technische offroad-oefeningen voor allroad-motoren. Diverse moeilijkheidsgraden, top 10 wint prijzen. Georganiseerd door Motorcursussen.nl en BackTrail. Kamperen op het terrein mogelijk.", url:"https://www.adventure-challenge.nl/", source:"Adventure Challenge", difficulty:"All levels", tags:["challenge","offroad","competitie","camping"], price:"€345", recurring:false },
+  { id:7, name:"Small Group Training Level 1", type:"training", date:"2026-05-08", dateEnd:"2026-05-08", location:"Wetteren, België", country:"BE", description:"Groepstraining in kleine groepen voor beginners op de locatie in Wetteren. Persoonlijke begeleiding op maat. Van 14 tot 74 jaar, voor elke allroad rijder.", url:"https://www.allroad-academy.be/", source:"Allroad Academy", difficulty:"Beginner", tags:["groepstraining","skills","beginner"], price:"€150", recurring:false },
+  { id:8, name:"Small Group Training Level 2", type:"training", date:"2026-05-22", dateEnd:"2026-05-22", location:"Wetteren, België", country:"BE", description:"Level 2 groepstraining in Wetteren. Verdieping van techniek en vaardigheden op onverharde ondergronden.", url:"https://www.allroad-academy.be/", source:"Allroad Academy", difficulty:"Intermediate", tags:["groepstraining","skills","gevorderd"], price:"€150", recurring:false },
+  { id:9, name:"Small Group Training Level 3", type:"training", date:"2026-05-29", dateEnd:"2026-05-29", location:"Ninove, België", country:"BE", description:"Level 3 groepstraining op de locatie in Ninove. Focus op obstakels, technische passages en rijzekerheid.", url:"https://www.allroad-academy.be/", source:"Allroad Academy", difficulty:"Expert", tags:["groepstraining","skills","expert"], price:"€150", recurring:false },
+  { id:10, name:"Small Group Training Level 1", type:"training", date:"2026-08-07", dateEnd:"2026-08-07", location:"Wetteren, België", country:"BE", description:"Groepstraining Level 1 in de zomerperiode. Ideaal als eerste stap offroad of als opfrisser voor het naseizoen.", url:"https://www.allroad-academy.be/", source:"Allroad Academy", difficulty:"Beginner", tags:["groepstraining","skills","beginner"], price:"€150", recurring:false },
+  { id:11, name:"Small Group Training Level 2", type:"training", date:"2026-08-14", dateEnd:"2026-08-14", location:"Wetteren, België", country:"BE", description:"Level 2 groepstraining in augustus. Kleine groepen, persoonlijke begeleiding, focus op rijzekerheid.", url:"https://www.allroad-academy.be/", source:"Allroad Academy", difficulty:"Intermediate", tags:["groepstraining","skills","gevorderd"], price:"€150", recurring:false },
+  { id:12, name:"Small Group Training Level 3", type:"training", date:"2026-08-16", dateEnd:"2026-08-16", location:"Ninove, België", country:"BE", description:"Level 3 groepstraining. Obstakels, technische passages en maximale rijzekerheid op de locatie in Ninove.", url:"https://www.allroad-academy.be/", source:"Allroad Academy", difficulty:"Expert", tags:["groepstraining","skills","expert"], price:"€150", recurring:false },
+  { id:13, name:"Small Group Training Level 1", type:"training", date:"2026-11-06", dateEnd:"2026-11-06", location:"Wetteren, België", country:"BE", description:"Herfsteditie groepstraining Level 1. Het naseizoen is ideaal om nieuwe vaardigheden te leren op modderig en nat terrein.", url:"https://www.allroad-academy.be/", source:"Allroad Academy", difficulty:"Beginner", tags:["groepstraining","skills","herfst"], price:"€150", recurring:false },
+  { id:14, name:"Small Group Training Level 2", type:"training", date:"2026-11-07", dateEnd:"2026-11-07", location:"Wetteren, België", country:"BE", description:"Herfsteditie Level 2. Technische training op uitdagende ondergronden in het late seizoen.", url:"https://www.allroad-academy.be/", source:"Allroad Academy", difficulty:"Intermediate", tags:["groepstraining","skills","herfst"], price:"€150", recurring:false },
+  { id:15, name:"Small Group Training Level 3", type:"training", date:"2026-11-08", dateEnd:"2026-11-08", location:"Ninove, België", country:"BE", description:"Herfsteditie Level 3. Voor de gevorderde rijder die het seizoen afsluit met technische training.", url:"https://www.allroad-academy.be/", source:"Allroad Academy", difficulty:"Expert", tags:["groepstraining","skills","herfst"], price:"€150", recurring:false },
+  { id:16, name:"Allroad Weekend Eiland van Maurik", type:"training", date:"2026-07-18", dateEnd:"2026-07-19", location:"Eiland van Maurik, Nederland", country:"NL", description:"Het jaarlijkse trainingsweekend van Alex van den Broek. Dakar-trainingslocatie met mul zand, strand, singletracks en technisch werk. Kamperen direct aan de baan.", url:"https://www.alexvandenbroekevents.nl/boek-een-training/allroad-trainingen/allroad-weekend-maurik", source:"Alex van den Broek", difficulty:"All levels", tags:["weekend","training","camping","zand"], price:null, recurring:false },
+  { id:17, name:"Carta Rallye", type:"rallye-raid", date:"2026-04-17", dateEnd:"2026-04-24", location:"Marokko", country:"MA", description:"Een toegankelijk rallye-raid format met meerdere categorieën. Ideaal als eerste serieuze navigatie-ervaring buiten Europa. Piste, zand en roadbook navigatie.", url:"https://www.owaka.com/rallye-raid/carta-rallye", source:"Owaka", difficulty:"Beginner", tags:["rally","desert","navigation"], price:null, recurring:false },
+  { id:18, name:"Touratech Rally", type:"festival", date:"2026-06-04", dateEnd:"2026-06-07", location:"Bad Dürrheim, Duitsland", country:"DE", description:"Begon als klantenwaardering-weekend, uitgegroeid tot de grootste adventure-bikeweek van Europa. Rijden, kamperen en gear testen in de Zwarte Woud.", url:"https://www.touratech.de/rally", source:"Touratech", difficulty:"All levels", tags:["festival","gear","community"], price:null, recurring:false },
+  { id:19, name:"Stella Alpina", type:"gathering", date:"2026-07-10", dateEnd:"2026-07-12", location:"Bardonecchia, Italië", country:"IT", description:"Duizenden rijders trekken elk jaar op naar de Colle del Sommeiller op 3000m. Geen entry fees, geen commercie. Gravel, dunne lucht en uitzichten die je niet vergeet.", url:"https://outduro.com/blog/europes-top-adventure-motorcycle-events-for-2026/", source:"OUTDURO", difficulty:"Intermediate", tags:["alpine","gravel","gathering"], price:null, recurring:false },
+  { id:20, name:"Adventure Country Tracks Pyreneeën", type:"route", date:"2026-07-25", dateEnd:"2026-08-01", location:"Pyreneeën, FR/ES", country:"FR", description:"Begeleide routetocht door de ruigste onverharde paden van de Pyreneeën. Kleine groepen, roadbook navigatie.", url:"https://www.adventurecountrytracks.com", source:"ADV Pulse", difficulty:"Intermediate", tags:["route","gravel","navigation"], price:null, recurring:false },
+  { id:21, name:"Horizons Unlimited Germany", type:"gathering", date:"2026-08-14", dateEnd:"2026-08-16", location:"Thüringen, Duitsland", country:"DE", description:"Grassroots-treffen voor langeafstandsrijders. Presentaties en praktische kennis van rijders die de Gobi, Patagonie en de Silk Road daadwerkelijk hebben gereden.", url:"https://horizonsunlimited.com/hubb/meetings", source:"Horizons Unlimited", difficulty:"All levels", tags:["overland","community","longdistance"], price:null, recurring:false },
+  { id:22, name:"OUTDURO Scout Festival", type:"festival", date:"2026-09-18", dateEnd:"2026-09-20", location:"Letland, Baltische Staten", country:"LV", description:"Festivalweekend in de bossen van Letland. Workshops, trailside-repairs, biker cooking en verhalen bij het kampvuur.", url:"https://outduro.com", source:"OUTDURO", difficulty:"All levels", tags:["festival","forest","skills"], price:null, recurring:false },
+  { id:23, name:"Morocco Desert Challenge", type:"rallye-raid", date:"2026-10-03", dateEnd:"2026-10-11", location:"Marrakech, Marokko", country:"MA", description:"Het op een na grootste rallye-raid ter wereld na de Dakar. Een coast-to-coast tocht zonder liaisons dwars door Marokko.", url:"https://www.owaka.com/rallye-raid/morocco-desert-challenge", source:"Owaka", difficulty:"Expert", tags:["rally","desert","navigation"], price:null, recurring:false },
+];
+
+const TYPE_CONFIG = {
+  training:     { label:"Training",     color:"#8b7355" },
+  challenge:    { label:"Challenge",    color:"#E86A1A" },
+  "rallye-raid":{ label:"Rallye-Raid",  color:"#c0392b" },
+  festival:     { label:"Festival",     color:"#5b8b7a" },
+  gathering:    { label:"Gathering",    color:"#4A4A4A" },
+  route:        { label:"Route",        color:"#6b8b6b" },
+};
+
+const SOURCE_COLOR = {
+  "ActionPlanet":       "#E86A1A",
+  "Adventure Challenge":"#E86A1A",
+  "Allroad Academy":    "#8b7355",
+  "Alex van den Broek": "#8b7355",
+  "Owaka":              "#4A4A4A",
+  "Touratech":          "#4A4A4A",
+  "OUTDURO":            "#4A4A4A",
+  "ADV Pulse":          "#4A4A4A",
+  "Horizons Unlimited": "#4A4A4A",
+};
+
+const DIFFICULTY_COLOR = {
+  Beginner:    "#6b8b6b",
+  Intermediate:"#E86A1A",
+  Expert:      "#c0392b",
+  "All levels":"#555",
+};
+
+const FLAGS = { NL:"🇳🇱", BE:"🇧🇪", DE:"🇩🇪", IT:"🇮🇹", FR:"🇫🇷", MA:"🇲🇦", LV:"🇱🇻" };
+const MONTHS = ["Jan","Feb","Mrt","Apr","Mei","Jun","Jul","Aug","Sep","Okt","Nov","Dec"];
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+
+let state = { type:"all", source:"all", country:"all", month:"all" };
+
+// ── HELPERS ──────────────────────────────────────────────────────────────────
+
+function dateLabel(start, end) {
+  const s = new Date(start), e = new Date(end);
+  if (start === end) return `${s.getDate()} ${MONTHS[s.getMonth()]} ${s.getFullYear()}`;
+  if (s.getMonth() === e.getMonth()) return `${s.getDate()} t/m ${e.getDate()} ${MONTHS[s.getMonth()]} ${s.getFullYear()}`;
+  return `${s.getDate()} ${MONTHS[s.getMonth()]} t/m ${e.getDate()} ${MONTHS[e.getMonth()]} ${s.getFullYear()}`;
+}
+
+function monthKey(dateStr) {
+  const d = new Date(dateStr);
+  return `${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+function getMonthIndex(dateStr) { return new Date(dateStr).getMonth(); }
+
+function el(tag, cls, html) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (html !== undefined) e.innerHTML = html;
+  return e;
+}
+
+// ── FILTERS ──────────────────────────────────────────────────────────────────
+
+function buildFilters() {
+  // Type
+  const typeRow = document.getElementById('type-filters');
+  typeRow.innerHTML = '';
+  const typeLabel = el('span','filter-label','Type');
+  typeRow.appendChild(typeLabel);
+  addBtn(typeRow, 'Alle', state.type === 'all', null, () => { state.type = 'all'; render(); });
+  Object.entries(TYPE_CONFIG).forEach(([k,v]) => {
+    addBtn(typeRow, v.label, state.type === k, v.color, () => { state.type = k; render(); });
+  });
+
+  // Source + Country
+  const srcRow = document.getElementById('source-filters');
+  srcRow.innerHTML = '';
+  const srcLabel = el('span','filter-label','Bron');
+  srcRow.appendChild(srcLabel);
+  const allSources = [...new Set(EVENTS.map(e => e.source))];
+  addBtn(srcRow, 'Alle', state.source === 'all', null, () => { state.source = 'all'; render(); });
+  allSources.forEach(s => {
+    addBtn(srcRow, s, state.source === s, SOURCE_COLOR[s], () => { state.source = s; render(); });
+  });
+
+  const div = el('span','filter-divider');
+  srcRow.appendChild(div);
+  const cLabel = el('span','filter-label','Land');
+  srcRow.appendChild(cLabel);
+  const allCountries = [...new Set(EVENTS.map(e => e.country))];
+  addBtn(srcRow, 'Alle', state.country === 'all', null, () => { state.country = 'all'; render(); });
+  allCountries.forEach(c => {
+    addBtn(srcRow, `${FLAGS[c]||''} ${c}`, state.country === c, null, () => { state.country = c; render(); });
+  });
+
+  // Month
+  const mRow = document.getElementById('month-filters');
+  mRow.innerHTML = '';
+  const mLabel = el('span','filter-label','Maand');
+  mRow.appendChild(mLabel);
+  const usedMonths = [...new Set(EVENTS.map(e => getMonthIndex(e.date)))].sort((a,b) => a-b);
+  addBtn(mRow, 'Alle', state.month === 'all', null, () => { state.month = 'all'; render(); });
+  usedMonths.forEach(m => {
+    addBtn(mRow, MONTHS[m], state.month === String(m), null, () => { state.month = String(m); render(); });
+  });
+}
+
+function addBtn(parent, label, active, color, onClick) {
+  const b = el('button','btn');
+  b.textContent = label;
+  if (active) {
+    if (color) { b.classList.add('active-color'); b.style.background = color; b.style.borderColor = color; }
+    else b.classList.add('active-sand');
+  }
+  b.addEventListener('click', onClick);
+  parent.appendChild(b);
+}
+
+// ── LEGEND ───────────────────────────────────────────────────────────────────
+
+function buildLegend() {
+  const legend = document.getElementById('legend');
+  legend.innerHTML = '';
+  const allSources = [...new Set(EVENTS.map(e => e.source))];
+  allSources.forEach(s => {
+    const item = el('div','legend-item');
+    const dot = el('span','legend-dot');
+    dot.style.background = SOURCE_COLOR[s] || '#555';
+    const lbl = el('span','legend-label', s);
+    item.appendChild(dot);
+    item.appendChild(lbl);
+    legend.appendChild(item);
+  });
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────────────
+
+function render() {
+  buildFilters();
+
+  const filtered = EVENTS
+    .filter(e => state.type === 'all' || e.type === state.type)
+    .filter(e => state.source === 'all' || e.source === state.source)
+    .filter(e => state.country === 'all' || e.country === state.country)
+    .filter(e => state.month === 'all' || getMonthIndex(e.date) === parseInt(state.month))
+    .sort((a,b) => new Date(a.date) - new Date(b.date));
+
+  document.getElementById('event-count').textContent =
+    `${filtered.length} van ${EVENTS.length} events · NL, BE en Europa`;
+
+  const container = document.getElementById('events-container');
+  container.innerHTML = '';
+
+  if (filtered.length === 0) {
+    const empty = el('div','empty');
+    empty.innerHTML = '<div class="empty-icon">🏜</div><div>Geen events gevonden voor deze filters.</div>';
+    container.appendChild(empty);
+    return;
+  }
+
+  // Group by month
+  const groups = {};
+  filtered.forEach(e => {
+    const k = monthKey(e.date);
+    if (!groups[k]) groups[k] = [];
+    groups[k].push(e);
+  });
+
+  Object.entries(groups).forEach(([month, events]) => {
+    const group = el('div','month-group');
+
+    // Month header
+    const hdr = el('div','month-header');
+    const title = el('div','month-title', month);
+    const line = el('div','month-line');
+    const count = el('div','month-count', `${events.length} event${events.length !== 1 ? 's' : ''}`);
+    hdr.appendChild(title); hdr.appendChild(line); hdr.appendChild(count);
+    group.appendChild(hdr);
+
+    // Cards
+    const list = el('div','events-list');
+    events.forEach(event => {
+      const card = buildCard(event);
+      list.appendChild(card);
+    });
+    group.appendChild(list);
+    container.appendChild(group);
+  });
+}
+
+function buildCard(event) {
+  const type = TYPE_CONFIG[event.type] || { label: event.type, color: '#4A4A4A' };
+  const d = new Date(event.date);
+  const srcColor = SOURCE_COLOR[event.source] || '#555';
+
+  const card = el('div','event-card');
+  card.style.borderLeftColor = type.color;
+  card.setAttribute('role','button');
+  card.setAttribute('tabindex','0');
+
+  // Date block
+  const dateBlock = el('div','event-date');
+  dateBlock.innerHTML = `<div class="event-day">${d.getDate()}</div><div class="event-month-label">${MONTHS[d.getMonth()]}</div>`;
+
+  // Divider
+  const divider = el('div','event-divider');
+
+  // Body
+  const body = el('div','event-body');
+
+  const meta = el('div','event-meta');
+  const typeTag = el('span','event-type-tag', type.label);
+  typeTag.style.color = type.color;
+  const dot = el('span','event-dot','·');
+  const srcTag = el('span','event-source-tag', event.source);
+  srcTag.style.color = srcColor;
+  meta.appendChild(typeTag); meta.appendChild(dot); meta.appendChild(srcTag);
+  if (event.price) {
+    const priceTag = el('span','event-price-tag', event.price);
+    meta.appendChild(priceTag);
+  }
+  if (event.recurring) {
+    const recTag = el('span','event-recurring-tag','Maandelijks');
+    meta.appendChild(recTag);
+  }
+
+  const name = el('div','event-name', event.name.toUpperCase());
+  const loc = el('div','event-location', `${FLAGS[event.country]||''} ${event.location}`);
+
+  body.appendChild(meta);
+  body.appendChild(name);
+  body.appendChild(loc);
+
+  card.appendChild(dateBlock);
+  card.appendChild(divider);
+  card.appendChild(body);
+
+  card.addEventListener('click', () => openModal(event));
+  card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') openModal(event); });
+
+  return card;
+}
+
+// ── MODAL ─────────────────────────────────────────────────────────────────────
+
+function openModal(event) {
+  const type = TYPE_CONFIG[event.type] || { label: event.type, color: '#4A4A4A' };
+
+  document.getElementById('modal').style.borderTopColor = type.color;
+  document.getElementById('modal-eyebrow').textContent = `${type.label} / ${event.source}`;
+  document.getElementById('modal-eyebrow').style.color = type.color;
+  document.getElementById('modal-title').textContent = event.name.toUpperCase();
+  document.getElementById('modal-desc').textContent = event.description;
+  document.getElementById('modal-cta').href = event.url;
+
+  const grid = document.getElementById('modal-grid');
+  const cells = [
+    ['Datum', dateLabel(event.date, event.dateEnd), null],
+    ['Locatie', `${FLAGS[event.country]||''} ${event.location}`, null],
+    ['Niveau', event.difficulty, DIFFICULTY_COLOR[event.difficulty]],
+    ['Prijs', event.price || 'Zie website', null],
+  ];
+  grid.innerHTML = cells.map(([label, val, color]) => `
+    <div class="modal-cell">
+      <div class="modal-cell-label">${label}</div>
+      <div class="modal-cell-value" style="${color ? `color:${color};font-weight:700` : ''}">${val}</div>
+    </div>
+  `).join('');
+
+  document.getElementById('modal-tags').innerHTML =
+    event.tags.map(t => `<span class="modal-tag">${t}</span>`).join('');
+
+  const backdrop = document.getElementById('modal-backdrop');
+  backdrop.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('modal-backdrop').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.getElementById('modal-close').addEventListener('click', closeModal);
+document.getElementById('modal-backdrop').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeModal();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+
+buildLegend();
+render();
+</script>
+</body>
+</html>
