@@ -217,13 +217,38 @@
 
     /* ── FOOTER NOTE ── */
     .footer-note {
-      border-top: 1px solid #111;
-      padding-top: 20px;
-      margin-top: 8px;
       font-size: 10px;
       color: var(--veryfaint);
       line-height: 1.6;
+      margin-bottom: 14px;
     }
+
+    .submit-cta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: #0d0d0d;
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--orange);
+      border-radius: 0 4px 4px 0;
+    }
+    .submit-cta-text {
+      font-size: 11px;
+      color: var(--faint);
+      letter-spacing: 0.3px;
+    }
+    .submit-cta-link {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--orange);
+      text-decoration: none;
+      white-space: nowrap;
+      transition: opacity 0.15s;
+    }
+    .submit-cta-link:hover { opacity: 0.7; }
 
     /* ── MODAL ── */
     .modal-backdrop {
@@ -334,10 +359,16 @@
 <main>
   <div class="legend" id="legend"></div>
   <div id="events-container"></div>
-  <p class="footer-note">
-    Events samengesteld via ActionPlanet, Adventure Challenge, Allroad Academy, Alex van den Broek Events, Owaka, ADV Pulse en OUTDURO.
-    Controleer de officiële pagina voor actuele data en inschrijfinfo.
-  </p>
+  <div style="border-top: 1px solid #111; padding-top: 20px; margin-top: 8px;">
+    <p class="footer-note">
+      Events samengesteld via ActionPlanet, Adventure Challenge, Allroad Academy, Alex van den Broek Events, Owaka, ADV Pulse en OUTDURO.
+      Controleer de officiële pagina voor actuele data en inschrijfinfo.
+    </p>
+    <div class="submit-cta">
+      <span class="submit-cta-text">Wil je jouw event op deze kalender?</span>
+      <a class="submit-cta-link" href="mailto:info@endurious.nl?subject=Event aanmelden voor de Endurious kalender&body=Naam event:%0ANaam organisatie:%0ADatum(s):%0ALocatie:%0AWebsite / inschrijflink:%0AKorte beschrijving:%0APrijs (indien van toepassing):">Stuur een e-mail</a>
+    </div>
+  </div>
 </main>
 
 <!-- Modal -->
