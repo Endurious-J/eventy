@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="nl">
-<head> 
+<head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ENDURIOUS — Event Kalender 2026</title>
+  <title>ENDURIOUS — Event Kalender</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
   <style>
@@ -82,7 +82,7 @@
       font-size: 9px;
       letter-spacing: 2px;
       text-transform: uppercase;
-      color: var(--veryfaint);
+      color: var(--orange);
       margin-right: 4px;
       white-space: nowrap;
     }
@@ -183,7 +183,6 @@
       font-weight: 700;
     }
     .event-dot { font-size: 9px; color: var(--border2); }
-    .event-source-tag { font-size: 9px; letter-spacing: 1px; text-transform: uppercase; }
     .event-price-tag {
       font-size: 9px;
       color: var(--faint);
@@ -318,7 +317,7 @@
 <header>
   <div class="header-inner">
     <div class="header-eyebrow">ENDURIOUS</div>
-    <h1>Event Kalender <span>2026</span></h1>
+    <h1>Event <span>Kalender</span></h1>
     <p class="header-sub" id="event-count">Adventure- en enduro-events in NL, BE en Europa</p>
   </div>
 </header>
@@ -326,7 +325,8 @@
 <div class="filters">
   <div class="filters-inner">
     <div class="filter-row" id="type-filters"></div>
-    <div class="filter-row" id="source-filters"></div>
+    <div class="filter-row" id="country-filters"></div>
+    <div class="filter-row" id="year-filters"></div>
     <div class="filter-row" id="month-filters"></div>
   </div>
 </div>
@@ -419,7 +419,7 @@ const MONTHS = ["Jan","Feb","Mrt","Apr","Mei","Jun","Jul","Aug","Sep","Okt","Nov
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
 
-let state = { type:"all", source:"all", country:"all", month:"all" };
+let state = { type:"all", country:"all", year:"all", month:"all" };
 
 // ── HELPERS ──────────────────────────────────────────────────────────────────
 
@@ -450,40 +450,38 @@ function buildFilters() {
   // Type
   const typeRow = document.getElementById('type-filters');
   typeRow.innerHTML = '';
-  const typeLabel = el('span','filter-label','Type');
-  typeRow.appendChild(typeLabel);
+  typeRow.appendChild(el('span','filter-label','Type'));
   addBtn(typeRow, 'Alle', state.type === 'all', null, () => { state.type = 'all'; render(); });
   Object.entries(TYPE_CONFIG).forEach(([k,v]) => {
     addBtn(typeRow, v.label, state.type === k, v.color, () => { state.type = k; render(); });
   });
 
-  // Source + Country
-  const srcRow = document.getElementById('source-filters');
-  srcRow.innerHTML = '';
-  const srcLabel = el('span','filter-label','Bron');
-  srcRow.appendChild(srcLabel);
-  const allSources = [...new Set(EVENTS.map(e => e.source))];
-  addBtn(srcRow, 'Alle', state.source === 'all', null, () => { state.source = 'all'; render(); });
-  allSources.forEach(s => {
-    addBtn(srcRow, s, state.source === s, SOURCE_COLOR[s], () => { state.source = s; render(); });
-  });
-
-  const div = el('span','filter-divider');
-  srcRow.appendChild(div);
-  const cLabel = el('span','filter-label','Land');
-  srcRow.appendChild(cLabel);
+  // Country
+  const cRow = document.getElementById('country-filters');
+  cRow.innerHTML = '';
+  cRow.appendChild(el('span','filter-label','Land'));
   const allCountries = [...new Set(EVENTS.map(e => e.country))];
-  addBtn(srcRow, 'Alle', state.country === 'all', null, () => { state.country = 'all'; render(); });
+  addBtn(cRow, 'Alle', state.country === 'all', null, () => { state.country = 'all'; render(); });
   allCountries.forEach(c => {
-    addBtn(srcRow, `${FLAGS[c]||''} ${c}`, state.country === c, null, () => { state.country = c; render(); });
+    addBtn(cRow, `${FLAGS[c]||''} ${c}`, state.country === c, null, () => { state.country = c; render(); });
   });
 
-  // Month
+  // Year
+  const yRow = document.getElementById('year-filters');
+  yRow.innerHTML = '';
+  yRow.appendChild(el('span','filter-label','Jaar'));
+  const usedYears = [...new Set(EVENTS.map(e => new Date(e.date).getFullYear()))].sort();
+  addBtn(yRow, 'Alle', state.year === 'all', null, () => { state.year = 'all'; state.month = 'all'; render(); });
+  usedYears.forEach(y => {
+    addBtn(yRow, String(y), state.year === String(y), null, () => { state.year = String(y); state.month = 'all'; render(); });
+  });
+
+  // Month — only show months relevant to selected year
   const mRow = document.getElementById('month-filters');
   mRow.innerHTML = '';
-  const mLabel = el('span','filter-label','Maand');
-  mRow.appendChild(mLabel);
-  const usedMonths = [...new Set(EVENTS.map(e => getMonthIndex(e.date)))].sort((a,b) => a-b);
+  mRow.appendChild(el('span','filter-label','Maand'));
+  const relevantEvents = state.year === 'all' ? EVENTS : EVENTS.filter(e => new Date(e.date).getFullYear() === parseInt(state.year));
+  const usedMonths = [...new Set(relevantEvents.map(e => getMonthIndex(e.date)))].sort((a,b) => a-b);
   addBtn(mRow, 'Alle', state.month === 'all', null, () => { state.month = 'all'; render(); });
   usedMonths.forEach(m => {
     addBtn(mRow, MONTHS[m], state.month === String(m), null, () => { state.month = String(m); render(); });
@@ -525,13 +523,13 @@ function render() {
 
   const filtered = EVENTS
     .filter(e => state.type === 'all' || e.type === state.type)
-    .filter(e => state.source === 'all' || e.source === state.source)
     .filter(e => state.country === 'all' || e.country === state.country)
+    .filter(e => state.year === 'all' || new Date(e.date).getFullYear() === parseInt(state.year))
     .filter(e => state.month === 'all' || getMonthIndex(e.date) === parseInt(state.month))
     .sort((a,b) => new Date(a.date) - new Date(b.date));
 
   document.getElementById('event-count').textContent =
-    `${filtered.length} van ${EVENTS.length} events · NL, BE en Europa`;
+    `${filtered.length} van ${EVENTS.length} events`;
 
   const container = document.getElementById('events-container');
   container.innerHTML = '';
@@ -596,10 +594,7 @@ function buildCard(event) {
   const meta = el('div','event-meta');
   const typeTag = el('span','event-type-tag', type.label);
   typeTag.style.color = type.color;
-  const dot = el('span','event-dot','·');
-  const srcTag = el('span','event-source-tag', event.source);
-  srcTag.style.color = srcColor;
-  meta.appendChild(typeTag); meta.appendChild(dot); meta.appendChild(srcTag);
+  meta.appendChild(typeTag);
   if (event.price) {
     const priceTag = el('span','event-price-tag', event.price);
     meta.appendChild(priceTag);
